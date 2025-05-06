@@ -1,0 +1,18 @@
+/* account-info.css */
+
+/* Hover en la imagen del usuario */
+#user-picture-header:hover {
+    box-shadow: 0 0 0 3px rgba(106, 106, 106, 0.5); /* rojo semitransparente */
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  /* Estilo personalizado para el botón de Logout */
+  .dropdown-item#logout-btn {
+    color: #dc3545 !important; /* Rojo Bootstrap */
+  }
+  
+  .dropdown-item#logout-btn:hover {
+    background-color: #f8d7da !important; /* Fondo rojo claro */
+    color: #a71d2a !important; /* Rojo más oscuro */
+  }
+  
