@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro</title>
+</head>
+<body>
+  <h2>Registro de usuario</h2>
+  <form id="register-form">
+    <label>
+      Email:<br />
+      <input type="email" name="email" required />
+    </label><br /><br />
+
+    <label>
+      Contraseña:<br />
+      <input type="password" name="password" required />
+    </label><br /><br />
+
+    <label>
+      Confirmar contraseña:<br />
+      <input type="password" name="confirmPassword" required />
+    </label><br /><br />
+
+    <label>
+      Nombre:<br />
+      <input type="text" name="name" required />
+    </label><br /><br />
+
+    <button type="submit">Registrarse</button>
+  </form>
+
+  <script>
+    document
+      .getElementById('register-form')
+      .addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const email = form.email.value.trim();
+        const password = form.password.value;
+        const confirm = form.confirmPassword.value;
+        const name = form.name.value.trim();
+
+        if (password !== confirm) {
+          return alert('Las contraseñas no coinciden.');
+        }
+
+        const payload = { email, password, name };
+
+        try {
+          const res = await fetch('http://localhost:4000/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const body = await res.json();
+
+          if (res.ok) {
+            alert('Usuario registrado correctamente');
+            window.location.href = 'login.html';
+          } else {
+            alert('Error: ' + (body.error || body.message || 'Desconocido'));
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error de red al registrar usuario');
+        }
+      });
+  </script>
+</body>
+</html>
