@@ -1,0 +1,49 @@
+/* Fondo grisaceo para toda la página */
+body {
+    background-color: #f0f0f0;
+  }
+  
+  /* Cada slide tiene altura fija de 640px, sin importar la imagen */
+  .slide-bg {
+    height: 640px;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  /* Clase genérica para aplicar bordes (desactivado) y márgenes únicamente verticales.
+     Aquí quitamos el borde (quitando el color gris) y los márgenes laterales */
+  .custom-box {
+    /* Eliminamos el borde previamente asignado */
+    border: none;
+    /* Márgenes: 10px arriba y abajo; 0 a los lados para ocupar todo el ancho */
+    margin: 10px 0;
+    box-sizing: border-box;
+  }
+  
+  .carousel-caption {
+    bottom: 20%;
+    /* Fondo negro semitransparente */
+    background: rgba(91, 91, 91, 0.5);
+    /* Efecto de desenfoque para suavizar el fondo */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    /* Padding para separar el contenido de los bordes */
+    padding: 20px;
+    /* Opcional: redondear bordes para un acabado más suave */
+    border-radius: 10px;
+  }
+  
+  .carousel-caption h1 {
+    font-family: 'Funnel Display', sans-serif;
+    font-size: 3.5rem;
+    color: white;
+    margin: 0;
+  }
+  
+  .carousel-caption p {
+    font-family: 'Funnel Display', sans-serif;
+    font-size: 1.5rem;
+    color: white;
+  }
+  
+  

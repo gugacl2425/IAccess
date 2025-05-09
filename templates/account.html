@@ -14,25 +14,27 @@
   <link rel="stylesheet" href="../styles/account-info.css" />
 </head>
 <body>
-  <header class="site-header d-flex justify-content-between align-items-center px-4 py-2">
+  <header class="site-header">
     <div class="header-title">IAccess</div>
-    <div class="user-header-info dropdown">
-      <img
-        id="user-picture-header"
-        src=""
-        class="rounded-circle dropdown-toggle"
-        style="width:40px; height:40px; cursor:pointer;"
-        role="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      />
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><h6 class="dropdown-header" id="user-name-header">Usuario</h6></li>
-        <li><a class="dropdown-item" href="settings.html">Settings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><button class="dropdown-item" id="logout-btn">Logout</button></li>
-      </ul>
-    </div>
+    <nav class="header-nav">
+      <div class="user-header-info dropdown">
+        <img
+          id="user-picture-header"
+          src=""
+          class="rounded-circle dropdown-toggle"
+          style="width:40px; height:40px; cursor:pointer;"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        />
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><h6 class="dropdown-header" id="user-name-header">Usuario</h6></li>
+          <li><a class="dropdown-item" href="settings.html">Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><button class="dropdown-item" id="logout-btn">Logout</button></li>
+        </ul>
+      </div>
+    </nav>
   </header>
 
   <main class="container mt-5">
@@ -40,7 +42,6 @@
     <p>Email: <span id="user-email">–</span></p>
     <img id="user-picture" src="" alt="Foto de perfil" style="border-radius:50%;width:80px;height:80px;">
   </main>
-
 
   <script type="module" src="../scripts/account-info.js"></script>
   <script

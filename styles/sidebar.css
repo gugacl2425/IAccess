@@ -1,0 +1,109 @@
+/* sidebar.css */
+
+/* Reset y layout */
+body {
+    margin: 0;
+    display: flex;
+    font-family: 'Funnel Display', sans-serif;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background-color: #f9fafb;   /* fondo claro */
+    color: #2f3e46;               /* texto oscuro */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    border-right: 2px solid #cbd5e1;
+  }
+  
+  /* Logo */
+  .sidebar-logo h2 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.75rem;
+    color: #2f3e46;
+  }
+  
+  /* Acciones (botones) */
+  .sidebar-actions {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+  }
+  .sidebar-actions li + li {
+    margin-top: 0.5rem;
+  }
+  
+  /* Botón genérico */
+  .card-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    color: #1f2937;              /* un tono más oscuro */
+    background: none;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .card-btn .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+    fill: currentColor;
+  }
+  
+  /* Hover: fondo oscuro suave + texto blanco */
+  .card-btn:hover {
+    background-color: #e2e8f0;   /* gris claro oscuro */
+    color: #111827;              /* casi negro */
+  }
+  
+  /* Focus: degradado ligeramente más oscuro */
+  .card-btn:focus {
+    outline: none;
+    background-image: linear-gradient(45deg, #00b894, #4dabf7);
+    color: #ffffff;
+  }
+  
+  /* Alineación al inicio */
+  .card-btn.fullwidth {
+    justify-content: flex-start;
+  }
+  
+  /* Dropdown de usuario */
+  .sidebar-footer {
+    margin-top: auto;
+  }
+  .user-header-info {
+    display: flex;
+    align-items: center;
+  }
+  .user-header-info .dropdown-menu {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .user-header-info .dropdown-item {
+    color: #2f3e46;
+  }
+  .user-header-info .dropdown-item:hover {
+    background-color: #e2e8f0;
+  }
+  
+  /* Contenido principal */
+  .content {
+    margin-left: 240px;
+    padding: 1.5rem;
+    flex-grow: 1;
+  }
+  

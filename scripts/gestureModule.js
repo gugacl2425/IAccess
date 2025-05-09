@@ -39,7 +39,6 @@ import {
           this.videoEl.srcObject = stream;
           return new Promise(resolve => {
             this.videoEl.onloadeddata = () => {
-              // fija el tamaño del canvas una sola vez
               this.canvasEl.width  = this.videoEl.videoWidth;
               this.canvasEl.height = this.videoEl.videoHeight;
               this._loop();
