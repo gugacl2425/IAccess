@@ -54,6 +54,11 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'register.html'));
 });
 
+app.get('/handsign-login', (req, res) => {
+  
+  res.sendFile(path.join(__dirname, 'templates', 'HandSignLogin.html'));
+});
+
 // Vistas protegidas
 app.get('/home', ensureAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'home.html'));

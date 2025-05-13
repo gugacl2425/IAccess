@@ -52,6 +52,56 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
+// POST /auth/HandSignLogin
+router.post('/HandSignLogin', async (req, res, next) => {
+  const { email, gestureSequence } = req.body;
+  if (!email || !gestureSequence) {
+    return res.status(400).json({ error: 'Faltan parámetros' });
+  }
+
+  let sequence;
+  try {
+    sequence = JSON.parse(gestureSequence);
+    if (!Array.isArray(sequence) || sequence.length !== 3) {
+      throw new Error('Formato inválido');
+    }
+  } catch (err) {
+    return res.status(400).json({ error: 'Secuencia inválida' });
+  }
+
+  try {
+    // Busca al usuario y sus preferencias
+    const [rows] = await db.query(
+      'SELECT id, email, name, preferences FROM users WHERE email = ?',
+      [email]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const user = rows[0];
+    const expected = JSON.parse(user.preferences);  // ej. [2,5,7]
+    // Compara secuencias
+    const matches = expected.length === sequence.length
+      && expected.every((val, idx) => val === sequence[idx]);
+
+    if (!matches) {
+      return res.status(401).json({ error: 'Secuencia de gestos incorrecta' });
+    }
+
+    // Autentica manualmente el usuario
+    req.session.user = { id: user.id, email: user.email, name: user.name };
+    // Si quieres usar req.login() de Passport, podrías serializar el objeto usuario:
+    // req.login(user, err => { if (err) return next(err); ... });
+
+    return res.json({ success: true, redirect: '/settings' });
+  } catch (err) {
+    console.error('Error en HandSignLogin:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+module.exports = router;
+
 
 
 

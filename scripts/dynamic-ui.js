@@ -52,7 +52,7 @@ export default async function renderUI() {
             <i class="bi bi-google me-1"></i> Entrar con Google
         </button>
 
-          <button class="btn-handsign">HandSign Login</button>
+          <a href="/handsign-login" class="btn-handsign">HandSign Login</a>
           <button class="btn-alt" onclick="location.href='/login'">Login</button>
           <button class="btn-alt" onclick="location.href='/register'">Register</button>
         </nav>
