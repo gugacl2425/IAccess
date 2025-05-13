@@ -48,15 +48,36 @@ export default async function renderUI() {
         <div class="header-title">IAccess</div>
         <nav class="header-nav">
 
+        <button id="google-popup-btn" class="btn btn-outline-danger me-2">
+            <i class="bi bi-google me-1"></i> Entrar con Google
+        </button>
+
           <button class="btn-handsign">HandSign Login</button>
-          <button class="btn-alt" onclick="location.href='/login.html'">Login</button>
-          <button class="btn-alt" onclick="location.href='/register.html'">Register</button>
+          <button class="btn-alt" onclick="location.href='/login'">Login</button>
+          <button class="btn-alt" onclick="location.href='/register'">Register</button>
         </nav>
       </header>
     `;
-    // No necesitas ya importar oauth.js
+    document.getElementById('google-popup-btn').addEventListener('click', () => {
+      const oauthURL = window.GOOGLE_LOGIN_URI || '/auth/google';
+      const width = 500, height = 600;
+      const left = (window.screen.width - width) / 2;
+      const top  = (window.screen.height - height) / 2;
+
+      const popup = window.open(
+        oauthURL,
+        'google_oauth',
+        `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`
+      );
+
+      const timer = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(timer);
+          window.location.reload();
+        }
+      }, 500);
+    });
   }
 }
 
-// Ejecuta al cargar
 renderUI();

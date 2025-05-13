@@ -18,33 +18,15 @@
   />
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-  
+
   <!-- Estilos propios -->
   <link rel="stylesheet" href="../styles/header.css"/>
   <link rel="stylesheet" href="../styles/home-div.css"/>
-
-  <!-- INYECCIÓN DE VARIABLES DE ENTORNO -->
-  <script>
-    // Este script lo debe renderizar tu servidor al servir home.html
-    window.GOOGLE_CLIENT_ID  = '<%= process.env.GOOGLE_CLIENT_ID  %>';
-    window.GOOGLE_LOGIN_URI  = '/auth/google';
-  </script>
-
-  <!-- Google Identity Services (opcional) -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body style="font-family: 'Funnel Display', sans-serif;">
   <div id="app"></div>
 
-  <div class="text-center my-4">
-    <!-- Botón Google con popup -->
-    <button id="google-popup-btn" class="btn btn-outline-danger">
-      <i class="bi bi-google me-2"></i> Entrar con Google
-    </button>
-  </div>
-
-  <div id="google-signin-button"></div>
-
+  <!-- Carrusel -->
   <div id="carouselExample" class="carousel slide">
     <div class="carousel-inner custom-box">
       <div class="carousel-item active slide-bg" style="background-image: url('../images/home-div1.jpg');">
@@ -76,35 +58,14 @@
     </button>
   </div>
 
+  <!-- Sección informativa -->
   <div class="custom-box">
     <h2 class="text-center mt-5">Lorem ipsum dolor sit.</h2>
     <p class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, ipsa.</p>
   </div>
-  
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script type="module" src="../scripts/dynamic-ui.js"></script>
-
-  <script>
-    document.getElementById('google-popup-btn').addEventListener('click', () => {
-      const oauthURL = window.GOOGLE_LOGIN_URI;
-      const width = 500, height = 600;
-      const left = (window.screen.width - width) / 2;
-      const top  = (window.screen.height - height) / 2;
-
-      const popup = window.open(
-        oauthURL,
-        'google_oauth',
-        `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`
-      );
-
-      const timer = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(timer);
-          window.location.reload(); // recarga para aplicar la sesión
-        }
-      }, 500);
-    });
-  </script>
 </body>
 </html>

@@ -3,7 +3,7 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth.js');
 
 const app = express();
 
@@ -13,6 +13,7 @@ require('./strategies/localStrategy');
 
 // Middleware JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Sesiones
 app.use(session({
@@ -35,8 +36,11 @@ function ensureAuth(req, res, next) {
   res.redirect('/');
 }
 
-// Carpeta de archivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'templates', 'login.html'));
+})
+
+// Middleware para servir archivos estáticos
 app.use('/styles', express.static(path.join(__dirname, 'styles')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -45,6 +49,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'home.html'));
 });
+
 app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'templates', 'register.html'));
 });

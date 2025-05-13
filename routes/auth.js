@@ -1,10 +1,12 @@
 const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-const db = require('../scripts/db.js'); // conexión pool a MariaDB
+const db = require('../scripts/db.js');
 const router = express.Router();
 
-// Login clásico
+
+
+
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user) => {
     if (err) return next(err);
@@ -13,39 +15,63 @@ router.post('/login', (req, res, next) => {
     req.login(user, (err) => {
       if (err) return next(err);
       req.session.user = { id: user.id, email: user.email, name: user.name };
-      res.json({ message: 'Login exitoso' });
+        return res.redirect('/settings');
     });
+
+
   })(req, res, next);
 });
 
-// Registro clásico
-router.post('/register', async (req, res) => {
-  const { email, password, name } = req.body;
-  if (!email || !password || !name) return res.status(400).json({ error: 'Faltan campos' });
+router.post('/register', async (req, res, next) => {
+  const { email, password, confirmPassword, name } = req.body;
+
+
+  if (!email || !password || !confirmPassword || !name) {
+    return res.redirect(302, '/register?error=missing');
+  }
+  if (password !== confirmPassword) {
+    return res.redirect(302, '/register?error=nomatch');
+  }
 
   try {
     const hash = await bcrypt.hash(password, 10);
+
     await db.query(
       'INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)',
       [email, hash, name]
     );
-    res.status(201).json({ message: 'Usuario registrado' });
+
+
+    return res.redirect(302, '/login?registered=1');
+
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY') {
-      res.status(409).json({ error: 'El usuario ya existe' });
-    } else {
-      res.status(500).json({ error: 'Error interno' });
+      return res.redirect(302, '/register?error=exists');
     }
+    return next(err);
   }
 });
 
-// Google login
+
+
+
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('/home');
+    res.send(`
+      <html>
+      <body>
+        <script>
+          // Refresca la ventana padre para que detecte la sesión
+          window.opener.location.reload();
+          // Cierra esta ventana popup
+          window.close();
+        </script>
+      </body>
+      </html>
+    `);
   }
 );
 
