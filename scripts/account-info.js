@@ -1,35 +1,38 @@
-window.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("google_user") || "{}");
-  
-    if (!user || !user.name) {
-      window.location.href = "home.html";
-      return;
-    }
-  
+// public/scripts/account-info.js
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("/profile", {
+      credentials: 'include',
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error("No autenticado");
+    const { user } = await res.json();
 
-    const picHeader = document.getElementById("user-picture-header");
-    const nameHeader = document.getElementById("user-name-header");
-  
-    if (user.picture) {
-      picHeader.src = user.picture;
-    } else {
-      picHeader.src = "/images/default-avatar.jpg"; 
-    }
-    nameHeader.textContent = user.name;
-  
+
     document.getElementById("user-name").textContent = user.name;
     document.getElementById("user-email").textContent = user.email || "–";
-    const picMain = document.getElementById("user-picture");
+    document.getElementById("user-name-header").textContent = user.name;
+
+    const picHeader = document.getElementById("user-picture-header");
+    const picMain   = document.getElementById("user-picture");
     if (user.picture) {
-      picMain.src = user.picture;
+      picHeader.src = user.picture;
+      picMain.src   = user.picture;
     } else {
-      picMain.style.display = "none";
+      picHeader.src = "/images/default-avatar.jpg";
+      if (picMain) picMain.style.display = "none";
     }
-  
 
     document.getElementById("logout-btn").addEventListener("click", () => {
-      localStorage.clear();
-      window.location.href = "home.html";
+      fetch("/logout", {
+        method: "POST",
+        credentials: 'include'
+      }).then(() => {
+        window.location.href = "/login";
+      });
     });
-  });
-  
+
+  } catch (err) {
+    console.warn("No se pudo obtener perfil:", err);
+  }
+});

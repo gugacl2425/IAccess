@@ -3,19 +3,36 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
+const db = require('./scripts/db');           // <— Para deserializeUser
 const authRoutes = require('./routes/auth.js');
 
 const app = express();
 
-// Inicializa Passport strategies
+// 1) Inicializa Passport strategies
 require('./strategies/googleStrategy');
 require('./strategies/localStrategy');
 
-// Middleware JSON
+// 2) Serialización / deserialización
+passport.serializeUser((user, done) => {
+  done(null, user.id); // guardamos solo el ID
+});
+passport.deserializeUser(async (id, done) => {
+  try {
+    const [rows] = await db.query(
+      'SELECT id, email, name, picture FROM users WHERE id = ?',
+      [id]
+    );
+    done(null, rows[0] || false);
+  } catch (err) {
+    done(err);
+  }
+});
+
+// 3) Middlewares para parsear body
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Sesiones
+// 4) Configura sesiones
 app.use(session({
   secret: process.env.SESSION_SECRET || 'y:Srt~SU4hpX>-B',
   resave: false,
@@ -23,68 +40,74 @@ app.use(session({
   cookie: { secure: false, sameSite: 'lax', maxAge: 86400000 }
 }));
 
-// Inicializa Passport
+// 5) Inicializa Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Rutas de autenticación (login, register, Google OAuth)
-app.use('/auth', authRoutes);
 
-// Middleware para proteger vistas
+// 7) Middleware de protección
 function ensureAuth(req, res, next) {
-  if (req.isAuthenticated() || req.session.user) return next();
-  res.redirect('/');
+  console.log('>>> ensureAuth:', {
+    isAuthenticated: req.isAuthenticated(),
+    user: req.user
+  });
+  if (req.isAuthenticated() || req.user) return next();
+  return res.redirect('/login');
 }
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'login.html'));
-})
 
-// Middleware para servir archivos estáticos
+// 6) Rutas de autenticación
+app.use('/auth', authRoutes);
+
+
+
+// 8) Archivos estáticos
 app.use('/styles', express.static(path.join(__dirname, 'styles')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Vistas abiertas
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'home.html'));
-});
+// 9) Rutas públicas
+app.get('/', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'home.html'))
+);
+app.get('/login', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'login.html'))
+);
+app.get('/register', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'register.html'))
+);
+app.get('/handsign-login', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'HandSignLogin.html'))
+);
+app.get('/home', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'home.html'))
+);
+app.get('/account', (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'account.html'))
+);
 
-app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'register.html'));
-});
-
-app.get('/handsign-login', (req, res) => {
-  
-  res.sendFile(path.join(__dirname, 'templates', 'HandSignLogin.html'));
-});
-
-// Vistas protegidas
-app.get('/home', ensureAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'home.html'));
-});
-app.get('/account', ensureAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'account.html'));
-});
-app.get('/settings', ensureAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'templates', 'settings.html'));
-});
-
-// Perfil (API) protegido
+// 10) Rutas protegidas
+app.get('/settings', ensureAuth, (req, res) =>
+  res.sendFile(path.join(__dirname, 'templates', 'settings.html'))
+);
 app.get('/profile', ensureAuth, (req, res) => {
-  const user = req.user || req.session.user;
-  res.json({ user });
+  // Evitar cache en el navegador y proxies
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.json({ user: req.user });
 });
 
-// Logout
-app.post('/logout', (req, res) => {
-  req.logout(() => {
-    req.session.destroy();
-    res.clearCookie('connect.sid');
-    res.redirect('/');
+
+// 11) Logout
+app.post('/logout', (req, res, next) => {
+  req.logout(err => {
+    if (err) return next(err);
+    req.session.destroy(() => {
+      res.clearCookie('connect.sid');
+      res.redirect('/login');
+    });
   });
 });
 
-// Inicia servidor
+// 12) Inicia servidor
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
