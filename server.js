@@ -97,6 +97,26 @@ app.get('/profile', ensureAuth, (req, res) => {
 });
 
 
+
+
+app.post('/settings/name', ensureAuth, async (req, res, next) => {
+  const userId = req.user.id;
+  const newName = req.body.name && req.body.name.trim();
+  if (!newName) {
+    return res.status(400).json({ error: 'Nombre vacío' });
+  }
+  try {
+    await db.query('UPDATE users SET name = ? WHERE id = ?', [newName, userId]);
+    req.user.name = newName;
+    // Devuelve JSON en lugar de redirect
+    return res.json({ success: true, name: newName });
+  } catch (err) {
+    return res.status(500).json({ error: 'Error al actualizar nombre' });
+  }
+});
+
+
+
 // 11) Logout
 app.post('/logout', (req, res, next) => {
   req.logout(err => {
