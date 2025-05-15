@@ -100,10 +100,17 @@ body {
     background-color: #e2e8f0;
   }
   
-  /* Contenido principal */
   .content {
-    margin-left: 240px;
-    padding: 1.5rem;
-    flex-grow: 1;
-  }
-  
+  margin-left: 300px;
+  padding: 1.5rem;
+  flex-grow: 1;
+  background-color: #f9fafb;
+}
+
+
+.content-wrapper {
+  background-color: #1570cc;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1rem;
+}

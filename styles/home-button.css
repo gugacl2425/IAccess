@@ -1,0 +1,33 @@
+/* home-button.css */
+.home-link {
+  position: fixed;
+  top: 20px;       /* Posición superior */
+  left: 20px;      /* Posición izquierda */
+  z-index: 100;
+  background: #3b82f6;
+  padding: 1rem;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-link svg {
+  width: 2.2rem;   /* Tamaño ajustado */
+  height: 2.2rem;
+  fill: white;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animación hacia abajo al hacer hover */
+.home-link:hover {
+  background: #2563eb;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(3px) scale(1.15);
+}
+
+.home-link:hover svg {
+  transform: scale(1.25);
+}
