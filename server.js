@@ -5,6 +5,9 @@ const session = require('express-session');
 const passport = require('passport');
 const db = require('./scripts/db');           // <— Para deserializeUser
 const authRoutes = require('./routes/auth.js');
+const bcrypt = require('bcrypt');
+const multer = require('multer');
+const upload = multer({ dest: path.join(__dirname, 'uploads/') });
 
 const app = express();
 
@@ -65,6 +68,7 @@ app.use('/auth', authRoutes);
 app.use('/styles', express.static(path.join(__dirname, 'styles')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 9) Rutas públicas
 app.get('/', (req, res) =>
@@ -114,6 +118,53 @@ app.post('/settings/name', ensureAuth, async (req, res, next) => {
     return res.status(500).json({ error: 'Error al actualizar nombre' });
   }
 });
+
+// 10.3) Generar código de 6 caracteres y guardarlo en sesión
+app.post('/settings/password-reset-request', ensureAuth, (req, res) => {
+  // Genera un código alfanumérico de 6 caracteres
+  const code = [...Array(6)].map(() => (
+    Math.random().toString(36).charAt(2)
+  )).join('').toUpperCase();
+
+  // Guárdalo en la sesión del usuario
+  req.session.resetCode = code;
+  // Opcional: también guarda un timestamp para caducidad
+  req.session.resetAt   = Date.now();
+
+  // Devuelve JSON con el código
+  res.json({ success: true, code });
+});
+
+// 10.4) Verificar código y cambiar contraseña
+app.post('/settings/password-reset-verify', ensureAuth, async (req, res, next) => {
+  const { code, newPassword } = req.body;
+
+  // Comprueba que haya un código en sesión y que no caduque en 15 min
+  if (!req.session.resetCode ||
+      req.session.resetCode !== code.toUpperCase() ||
+      Date.now() - (req.session.resetAt||0) > 15*60*1000
+  ) {
+    return res.status(400).json({ error: 'Código inválido o caducado' });
+  }
+
+  // Borra el código para no reutilizarlo
+  delete req.session.resetCode;
+  delete req.session.resetAt;
+
+  try {
+    // Hashea la nueva contraseña
+    const hash = await bcrypt.hash(newPassword, 10);
+    // Actualiza en la base de datos
+    await db.query('UPDATE users SET password_hash = ? WHERE id = ?', [
+      hash, req.user.id
+    ]);
+    return res.json({ success: true, message: 'Contraseña actualizada' });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
 
 
 
